@@ -18,6 +18,9 @@ public class SoundManager : Singleton<SoundManager>
     [Header("Sound Toggle")]
     [SerializeField] private bool soundEnabled = true;
     [SerializeField] private Toggle soundToggle;
+    [SerializeField] private Image toggleImage;
+    [SerializeField] private Sprite soundOnSprite;
+    [SerializeField] private Sprite soundOffSprite;
     private const string SOUND_ENABLED_KEY = "SoundEnabled";
 
     private void Start()
@@ -28,6 +31,7 @@ public class SoundManager : Singleton<SoundManager>
         {
             soundToggle.isOn = soundEnabled;
             soundToggle.onValueChanged.AddListener(OnToggleValueChanged);
+            UpdateToggleSprite(soundEnabled);
         }
 
         if (gameAudioSource == null)
@@ -41,8 +45,17 @@ public class SoundManager : Singleton<SoundManager>
     private void OnToggleValueChanged(bool isOn)
     {
         soundEnabled = isOn;
+        UpdateToggleSprite(isOn);
         PlayerPrefs.SetInt(SOUND_ENABLED_KEY, soundEnabled ? 1 : 0);
         PlayerPrefs.Save();
+    }
+
+    private void UpdateToggleSprite(bool isOn)
+    {
+        if (toggleImage != null)
+        {
+            toggleImage.sprite = isOn ? soundOnSprite : soundOffSprite;
+        }
     }
 
     public void PlayCardTransition()

@@ -12,6 +12,13 @@ public class CountdownTimer : Singleton<CountdownTimer>
     [Header("UI Display")]
     [Tooltip("UI Text element to display the timer")]
     [SerializeField] private Text timerText; // Замените на TextMeshProUGUI, если используете TextMeshPro
+    [Tooltip("Progress bar image component")]
+    [SerializeField] private Image progressBar;
+
+    [Header("Progress Bar Colors")]
+    [SerializeField] private Color startColor = Color.green;
+    [SerializeField] private Color middleColor = Color.yellow;
+    [SerializeField] private Color endColor = Color.red;
 
     [Header("Events")]
     [Tooltip("Event invoked when the timer reaches zero")]
@@ -23,7 +30,11 @@ public class CountdownTimer : Singleton<CountdownTimer>
     void Start()
     {
         // Инициализация таймера при старте
-       
+        if (progressBar != null)
+        {
+            progressBar.type = Image.Type.Filled;
+            progressBar.fillMethod = Image.FillMethod.Horizontal;
+        }
     }
     public void Init()
     {
@@ -54,6 +65,27 @@ public class CountdownTimer : Singleton<CountdownTimer>
             TimeSpan timeSpan = TimeSpan.FromSeconds(displayTime);
             // Форматируем как ММ:СС
             timerText.text = string.Format("{0:D2}:{1:D2}", timeSpan.Minutes, timeSpan.Seconds);
+        }
+
+        if (progressBar != null)
+        {
+            // Update progress bar fill amount
+            float progress = currentTime / startTimeInSeconds;
+            progressBar.fillAmount = progress;
+
+            // Update color based on progress
+            if (progress > 0.5f)
+            {
+                // From green to yellow (100% to 50%)
+                float t = (progress - 0.5f) * 2f;
+                progressBar.color = Color.Lerp(middleColor, startColor, t);
+            }
+            else
+            {
+                // From yellow to red (50% to 0%)
+                float t = progress * 2f;
+                progressBar.color = Color.Lerp(endColor, middleColor, t);
+            }
         }
     }
 
