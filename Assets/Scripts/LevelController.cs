@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Collections;
 
 // Убираем наследование от Singleton<T>, если он был специфичен для DontDestroyOnLoad
 public class LevelController : Singleton<LevelController> // Можно сделать Singleton, если нужен глобальный доступ
@@ -21,12 +22,16 @@ public class LevelController : Singleton<LevelController> // Можно сдел
 
     public void Init()
     {
-       
+        StartCoroutine(InitCoroutine());
+
+    }
+    private IEnumerator InitCoroutine()
+    {
+        yield return new WaitForSeconds(1f);
         DeactivateAllLevels();
         ActivateLevel(startingLevelIndex);
         SocketSystem.Instance.SendBoostGameMessage();
-         CountdownTimer.Instance.Init();
-
+        CountdownTimer.Instance.Init();
     }
 
     // Активирует уровень по индексу в списке levelRoots
@@ -93,7 +98,7 @@ public class LevelController : Singleton<LevelController> // Можно сдел
         {
             int startIndex = Mathf.Max(0, levelRoots.Count - 10); // Начальный индекс для выбора (не раньше 0)
             int randomIndex = Random.Range(startIndex, levelRoots.Count); // Выбираем случайный индекс от startIndex до последнего
-           
+
             ActivateLevel(randomIndex);
         }
         else
